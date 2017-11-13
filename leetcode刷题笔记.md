@@ -6,7 +6,7 @@
 
 根据数组生成一个数据结构，这个数据结构的定义是: 将数组中的最大值作为根节点，然后按照该值的位置将数组左右分为左子树和右子树：
 
-![157](D:\MyDeveloperWay\LearningScript\leetcode\leetcode_script\157.png)
+![157](157.png)
 
 ### 提交代码：
 
