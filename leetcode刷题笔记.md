@@ -138,3 +138,88 @@ int widthOfBinaryTree(TreeNode* root) {
     }
 ```
 
+## 542. 01Matrix
+
+### 题目
+
+给定一个只含有0,1的矩阵，求解每个为1的数字躲在的位置到最近的0的距离。
+
+### 提交代码
+
+```
+int n, m;
+int get_dis(vector<vector<int>>res, vector<vector<bool>> is_visible, vector<vector<int>>& matrix, int i, int j) {
+if (matrix[i][j] == 0) return 0;
+if (is_visible[i][j]) return res[i][j];
+is_visible[i][j] = true;
+int tmp = 100001;
+if (i + 1 < n) tmp = fmin(tmp, get_dis(res, is_visible, matrix, i + 1, j));
+if (i - 1 >= 0) tmp = fmin(tmp, get_dis(res, is_visible, matrix, i - 1, j));
+if (j + 1 < m) tmp = fmin(tmp, get_dis(res, is_visible, matrix, i, j + 1));
+if (j - 1 >= 0) tmp = fmin(tmp, get_dis(res, is_visible, matrix, i, j - 1));
+return tmp + 1;
+
+}
+vector<vector<int>> updateMatrix1(vector<vector<int>>& matrix) {
+
+n = matrix.size();
+m = matrix[0].size();
+vector<vector<int>> res(n, vector<int>(m, 0));
+vector<vector<bool>> is_visible(n, vector<bool>(m, false));
+for (int i = 0; i<n; i++) {
+	for (int j = 0; j<m; j++) {
+		res[i][j] = get_dis(res, is_visible, matrix, i, j);
+	}
+}
+return res;
+}
+```
+
+### 错误解析
+
+这道题目不能够用深度优先遍历，因为会导致两个状态之间的互相利用，从而陷入死锁。。。因此可以采用宽度优先遍历的思想。
+
+### 正确代码
+
+```
+vector<vector<int>> updateMatrix(vector<vector<int>>& matrix) {
+
+    queue<pair<int,int>*> q;
+    int n = matrix.size();
+    int m = matrix[0].size();
+    for(int i=0; i<n; i++) {
+        for(int j=0; j<m; j++) {
+            if(matrix[i][j] == 0) q.push(new pair<int,int>(i,j));
+            else matrix[i][j] = INT_MAX;
+        }
+    }
+    while(!q.empty()) {
+        pair<int,int>* tmp = q.front();
+        q.pop();
+        int i = tmp->first;
+        int j = tmp->second;
+        if (i + 1 < n && matrix[i+1][j] > matrix[i][j] + 1) {
+            matrix[i+1][j] = matrix[i][j] + 1; 
+            q.push(new pair<int,int>(i+1,j));
+        }
+        if (i - 1 >= 0 && matrix[i-1][j] > matrix[i][j]  + 1) {
+            matrix[i-1][j] = matrix[i][j] + 1;
+            q.push(new pair<int,int>(i-1,j));
+        }
+ 	    if (j + 1 < m && matrix[i][j+1] > matrix[i][j] + 1) {
+
+            matrix[i][j+1] = matrix[i][j] + 1;
+            q.push(new pair<int,int>(i,j+1));
+        }
+        if (j - 1 >= 0 && matrix[i][j-1] > matrix[i][j] + 1) {
+            matrix[i][j-1] = matrix[i][j] + 1;
+            q.push(new pair<int,int>(i,j-1));
+        }
+    }
+    return matrix;
+}
+```
+
+### 复杂度分析
+
+时间复杂度为o(n)，空间复杂度为o(1).
